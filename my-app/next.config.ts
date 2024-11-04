@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverRuntimeConfig: {
+    RESEND_API_KEY: process.env.RESEND_API_KEY, // API-sleutel uit .env.local
+  },
 };
 
 export default nextConfig;
