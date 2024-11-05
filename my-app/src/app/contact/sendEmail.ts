@@ -1,10 +1,8 @@
 // src/app/contact/sendEmail.ts
 "use server";
 import { Resend } from "resend";
-import getConfig from "next/config";
 
-const { serverRuntimeConfig } = getConfig();
-const resend = new Resend(serverRuntimeConfig.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export const sendEmail = async (formData: FormData) => {
   const email = formData.get("email") as string;
@@ -13,8 +11,8 @@ export const sendEmail = async (formData: FormData) => {
 
   try {
     await resend.emails.send({
-      from: "jouw-email@domein.com",
-      to: email,
+      from: "maarssen616@gmail.com",
+      to: "maarssen616@gmail.com",
       subject: `Nieuw bericht van ${name}`,
       text: `Naam: ${name}\nE-mail: ${email}\nBericht:\n${message}`,
     });
