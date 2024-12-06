@@ -8,6 +8,9 @@ const ContactPage: React.FC = () => {
     email: "",
     message: "",
   });
+  const [sendStatus, setSendStatus] = useState<
+    "idle" | "success" | "error" | "invalid-email"
+  >("idle");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -15,8 +18,18 @@ const ContactPage: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const isValidEmail = (email: string) => {
+    // Basic email validation regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isValidEmail(formData.email)) {
+      setSendStatus("invalid-email");
+      return;
+    }
 
     const data = new FormData();
     data.append("name", formData.name);
@@ -25,9 +38,10 @@ const ContactPage: React.FC = () => {
 
     try {
       await sendEmail(data);
-      console.log("E-mail succesvol verzonden!");
+      setSendStatus("success");
+      setFormData({ name: "", email: "", message: "" }); // Reset form
     } catch (error) {
-      console.error("Fout bij verzenden e-mail:", error);
+      setSendStatus("error");
     }
   };
 
@@ -37,6 +51,21 @@ const ContactPage: React.FC = () => {
         <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
           Contacteer ons
         </h2>
+        {sendStatus === "success" && (
+          <div className="p-4 mb-4 text-green-800 bg-green-100 border border-green-400 rounded">
+            E-mail succesvol verzonden!
+          </div>
+        )}
+        {sendStatus === "error" && (
+          <div className="p-4 mb-4 text-red-800 bg-red-100 border border-red-400 rounded">
+            Fout bij het verzenden van de e-mail. Probeer het opnieuw.
+          </div>
+        )}
+        {sendStatus === "invalid-email" && (
+          <div className="p-4 mb-4 text-yellow-800 bg-yellow-100 border border-yellow-400 rounded">
+            Ongeldig e-mailadres. Controleer uw invoer.
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
